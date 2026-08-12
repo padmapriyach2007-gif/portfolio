@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherWeather - Premium Glassmorphic Weather Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            glass: {
+              light: 'rgba(255, 255, 255, 0.03)',
+              medium: 'rgba(255, 255, 255, 0.06)',
+              dark: 'rgba(15, 23, 42, 0.45)',
+              border: 'rgba(255, 255, 255, 0.08)',
+              borderHover: 'rgba(255, 255, 255, 0.15)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS file -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 min-h-screen text-slate-100 relative overflow-x-hidden flex items-center justify-center p-3 sm:p-6 md:p-8">
+  <!-- Twinkling stars canvas for night views -->
+  <canvas id="canvas-stars"></canvas>
+
+  <!-- Ambient background glow elements -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none -z-10 transition-all duration-1000" id="ambient-glow-1"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none -z-10 transition-all duration-1000" id="ambient-glow-2"></div>
+
+  <!-- Main App Shell -->
+  <div class="max-w-6xl w-full mx-auto rounded-3xl glass-panel relative z-10 overflow-hidden flex flex-col">
+    
+    <!-- Top Action Header -->
+    <header class="p-6 border-b border-white/5 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Logo Icon -->
+        <div class="p-2.5 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-2xl shadow-lg shadow-indigo-500/20">
+          <svg class="w-6 h-6 text-white animate-pulse-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-none">AetherWeather</h1>
+          <span class="text-xs text-slate-400/80 font-medium tracking-wide">METEOROLOGICAL INTELLIGENCE</span>
+        </div>
+      </div>
+
+      <!-- Search and Controls -->
+      <div class="flex flex-1 max-w-lg w-full items-center gap-3 md:justify-end">
+        <!-- Search Engine -->
+        <div class="relative flex-1">
+          <!-- GPS locate button (left) -->
+          <button id="btn-gps" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors duration-200" title="Use My Location">
+            <i data-lucide="map-pin" class="w-5 h-5"></i>
+          </button>
+          
+          <input type="text" id="search-input" placeholder="Search global cities..." autocomplete="off" class="glass-input w-full pl-11 pr-24 py-2.5 rounded-full text-sm outline-none focus:ring-1 focus:ring-white/20">
+          
+          <!-- Indicator badges (right) -->
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            <span id="demo-indicator" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-semibold rounded-full border border-amber-500/30">DEMO</span>
+            <button id="btn-settings" class="text-slate-400 hover:text-white transition-colors duration-200" title="API Settings">
+              <i data-lucide="settings" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Suggestions Dropdown -->
+          <div id="suggestions-box" class="absolute top-full left-0 right-0 mt-2.5 rounded-2xl glass-panel shadow-2xl z-50 divide-y divide-white/5 max-h-60 overflow-y-auto custom-scrollbar hidden">
+            <!-- suggestions populated via js -->
+          </div>
+        </div>
+
+        <!-- Temp Unit Toggle -->
+        <div class="flex p-0.5 bg-white/5 border border-white/5 rounded-full shrink-0">
+          <button id="btn-unit-c" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white shadow-md transition-all duration-200">°C</button>
+          <button id="btn-unit-f" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-slate-400 hover:text-white transition-all duration-200">°F</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Error Banner -->
+    <div id="error-banner" class="mx-6 mt-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-3 text-rose-300 text-sm hidden">
+      <i data-lucide="alert-circle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+      <div class="flex-1">
+        <h4 class="font-semibold text-rose-200">System Warning</h4>
+        <p id="error-message" class="text-xs text-rose-300/90 mt-0.5">Could not fetch weather data. Please check your network connection.</p>
+      </div>
+      <button onclick="document.getElementById('error-banner').classList.add('hidden')" class="text-rose-400 hover:text-rose-200 transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main id="dashboard-content" class="p-6 flex-1 flex flex-col gap-6">
+
+      <!-- Top Row Grid: Current Weather & Metrics Grid -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        <!-- Current Weather Panel (Left Column) -->
+        <article class="lg:col-span-4 glass-card p-6 flex flex-col justify-between relative overflow-hidden" id="card-current-weather">
+          <!-- Dynamic Condition Animation Layer (Injected via JS) -->
+          <div id="current-weather-bg-fx" class="absolute inset-0 pointer-events-none opacity-40 z-0"></div>
+
+          <div class="relative z-10 flex flex-col h-full justify-between gap-8">
+            <!-- City, Date and Time Info -->
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 id="weather-city" class="text-2xl font-bold tracking-tight text-white">-</h2>
+                <p id="weather-country" class="text-xs text-slate-400 font-medium tracking-wide uppercase">-</p>
+                <p id="weather-date" class="text-xs text-slate-400 mt-2 font-medium">-</p>
+              </div>
+              <span id="weather-time" class="text-sm font-semibold px-3 py-1 bg-white/5 border border-white/5 rounded-full text-slate-300">00:00 AM</span>
+            </div>
+
+            <!-- Temperature & SVG Weather Icon -->
+            <div class="flex items-center justify-between py-6">
+              <div>
+                <div class="flex items-start">
+                  <span id="weather-temp" class="text-7xl font-extrabold tracking-tighter text-white">--</span>
+                  <span id="weather-temp-unit" class="text-3xl font-medium text-slate-400 mt-1">°C</span>
+                </div>
+                <p id="weather-desc" class="text-sm font-semibold capitalize text-slate-300 mt-2">-</p>
+              </div>
+              <!-- Large Animated SVG Weather Icon container -->
+              <div id="weather-icon-large" class="w-24 h-24 flex items-center justify-center animate-float">
+                <!-- SVG Icon loaded via JS -->
+              </div>
+            </div>
+
+            <!-- High/Low & Feels Like -->
+            <div class="border-t border-white/5 pt-4 flex justify-between items-center text-xs text-slate-400">
+              <div class="flex items-center gap-1">
+                <i data-lucide="thermometer" class="w-4 h-4 text-slate-500"></i>
+                <span>Feels like <strong id="weather-feels" class="text-slate-300">--°</strong></span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="flex items-center gap-0.5"><i data-lucide="arrow-up" class="w-3.5 h-3.5 text-emerald-400"></i> <strong id="weather-high" class="text-slate-200">--°</strong></span>
+                <span class="flex items-center gap-0.5"><i data-lucide="arrow-down" class="w-3.5 h-3.5 text-blue-400"></i> <strong id="weather-low" class="text-slate-200">--°</strong></span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Metrics Grid (Right Column) -->
+        <section class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          
+          <!-- UV Index Card (Radial Gauge) -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>UV INDEX</span>
+              <i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center my-2 relative">
+              <!-- Radial Gauge SVG -->
+              <svg class="w-24 h-16" viewBox="0 0 100 60">
+                <!-- Gauge Track -->
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
+                <!-- Gauge Indicator Fill -->
+                <path id="uv-gauge" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#uv-gradient)" stroke-width="8" stroke-linecap="round" class="gauge-path"/>
+                
+                <defs>
+                  <linearGradient id="uv-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#10B981" />
+                    <stop offset="40%" stop-color="#F59E0B" />
+                    <stop offset="70%" stop-color="#EF4444" />
+                    <stop offset="100%" stop-color="#8B5CF6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <!-- Center Metric Text -->
+              <div class="absolute bottom-1 flex flex-col items-center">
+                <span id="metric-uv" class="text-2xl font-bold text-white">0</span>
+                <span id="metric-uv-level" class="text-[9px] uppercase tracking-wide text-slate-400 font-semibold">Low</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium mt-1 leading-normal" id="metric-uv-desc">-</div>
+          </article>
+
+          <!-- Wind Card (Compass Needle) -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>WIND STATUS</span>
+              <i data-lucide="wind" class="w-4 h-4 text-sky-400"></i>
+            </div>
+            
+            <div class="flex items-center gap-3 my-2 justify-center">
+              <!-- Compass Widget -->
+              <div class="relative w-16 h-16 border border-white/10 rounded-full flex items-center justify-center shrink-0">
+                <span class="absolute top-0.5 text-[8px] font-bold text-slate-500">N</span>
+                <span class="absolute right-1 text-[8px] font-bold text-slate-500">E</span>
+                <span class="absolute bottom-0.5 text-[8px] font-bold text-slate-500">S</span>
+                <span class="absolute left-1 text-[8px] font-bold text-slate-500">W</span>
+                
+                <!-- Rotating Arrow pointer -->
+                <div id="wind-compass-pointer" class="w-full h-full p-1 transition-transform duration-1000 ease-out" style="transform: rotate(0deg);">
+                  <div class="w-1.5 h-1.5 bg-sky-400 rounded-full mx-auto mt-0.5"></div>
+                  <!-- Mini needle triangle -->
+                  <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[8px] border-b-sky-400 mx-auto mt-1"></div>
+                </div>
+              </div>
+
+              <!-- Speed details -->
+              <div class="flex flex-col">
+                <div class="flex items-baseline">
+                  <span id="metric-wind-speed" class="text-2xl font-bold text-white">0</span>
+                  <span id="metric-wind-unit" class="text-xs text-slate-400 font-semibold ml-0.5">km/h</span>
+                </div>
+                <span id="metric-wind-dir" class="text-[10px] text-slate-400 font-semibold tracking-wide uppercase">Calm</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium mt-1 leading-normal">Directional degrees: <span id="metric-wind-degrees" class="text-slate-300 font-semibold">0°</span></div>
+          </article>
+
+          <!-- Air Quality Index (Scale Bar) -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>AIR QUALITY</span>
+              <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400" id="aqi-icon"></i>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center my-3 w-full">
+              <span id="metric-aqi" class="text-2xl font-bold text-white">0</span>
+              <span id="metric-aqi-status" class="text-[10px] font-bold tracking-wide uppercase text-emerald-400 mt-0.5">Good</span>
+              
+              <!-- AQI Segmented Slider -->
+              <div class="relative w-full h-1.5 bg-white/5 rounded-full mt-3 overflow-hidden flex">
+                <div class="w-1/5 h-full bg-emerald-500/40"></div>
+                <div class="w-1/5 h-full bg-yellow-500/40"></div>
+                <div class="w-1/5 h-full bg-orange-500/40"></div>
+                <div class="w-1/5 h-full bg-red-500/40"></div>
+                <div class="w-1/5 h-full bg-purple-500/40"></div>
+                
+                <!-- Position indicator dot -->
+                <div id="aqi-indicator-dot" class="absolute top-0 bottom-0 w-2.5 h-2.5 -mt-0.5 bg-white rounded-full border border-slate-900 transition-all duration-1000 shadow-md" style="left: 10%;"></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium leading-normal">PM2.5: <span id="metric-pm25" class="text-slate-300 font-semibold">-</span> µg/m³</div>
+          </article>
+
+          <!-- Humidity (Circular Meter) -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>HUMIDITY</span>
+              <i data-lucide="droplet" class="w-4 h-4 text-blue-400"></i>
+            </div>
+            
+            <div class="flex items-center justify-center gap-3 my-2.5">
+              <div class="relative w-14 h-14 flex items-center justify-center shrink-0">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-white/5" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"></path>
+                  <path id="humidity-progress" class="text-blue-500 transition-all duration-1000 ease-out" stroke="currentColor" stroke-dasharray="0, 100" stroke-width="3.2" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"></path>
+                </svg>
+                <div class="absolute text-sm font-bold text-white"><span id="metric-humidity">0</span>%</div>
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-xs font-semibold text-slate-300" id="metric-humidity-status">Normal</span>
+                <span class="text-[9px] text-slate-400/80 mt-0.5 leading-tight" id="metric-dewpoint">Dew point is --°</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium mt-1 leading-normal">Feels wetter than actual temp</div>
+          </article>
+
+          <!-- Pressure (Barometric Level) -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>PRESSURE</span>
+              <i data-lucide="compass" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center my-2.5">
+              <span id="metric-pressure" class="text-2xl font-bold text-white">1013</span>
+              <span class="text-[10px] font-semibold text-slate-400 tracking-wider uppercase">hPa</span>
+              
+              <!-- Indicator Scale -->
+              <div class="w-full bg-white/5 h-1 rounded-full mt-3 relative overflow-hidden">
+                <!-- average line (1013 hPa center) -->
+                <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-500"></div>
+                <!-- slider position -->
+                <div id="pressure-slider" class="absolute top-0 bottom-0 w-2 bg-emerald-400 rounded-full transition-all duration-1000" style="left: 50%;"></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium leading-normal" id="metric-pressure-desc">Standard sea-level range</div>
+          </article>
+
+          <!-- Visibility Card -->
+          <article class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center text-slate-400 text-xs font-semibold tracking-wider">
+              <span>VISIBILITY</span>
+              <i data-lucide="eye" class="w-4 h-4 text-violet-400"></i>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center my-2.5">
+              <div class="flex items-baseline">
+                <span id="metric-visibility" class="text-2xl font-bold text-white">10</span>
+                <span class="text-xs text-slate-400 font-semibold ml-0.5">km</span>
+              </div>
+              <span id="metric-visibility-status" class="text-[10px] font-semibold text-slate-300 mt-1 uppercase">Clear Horizon</span>
+              
+              <!-- Simple Progress line -->
+              <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
+                <div id="visibility-bar" class="bg-violet-400 h-full transition-all duration-1000" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400/80 text-center font-medium leading-normal">Perfect visibility index</div>
+          </article>
+        </section>
+      </section>
+
+      <!-- Hourly Forecast Row with Chart Toggle -->
+      <section class="glass-card p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="clock" class="w-5 h-5 text-indigo-400"></i>
+            <h3 class="text-sm font-semibold tracking-wider text-slate-300 uppercase">Hourly Forecast (Next 24h)</h3>
+          </div>
+          <!-- View Toggle Buttons (Cards vs Chart) -->
+          <div class="flex p-0.5 bg-white/5 border border-white/5 rounded-lg text-xs font-medium">
+            <button id="btn-view-cards" class="px-3 py-1 rounded-md bg-white/10 text-white shadow-sm transition-all">List</button>
+            <button id="btn-view-chart" class="px-3 py-1 rounded-md text-slate-400 hover:text-white transition-all">Trend</button>
+          </div>
+        </div>
+
+        <!-- Scrollable Hourly List Container -->
+        <div id="hourly-list-container" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar transition-all duration-300">
+          <!-- hourly items injected via js -->
+        </div>
+
+        <!-- SVG Line/Area Chart Container (Hidden by default) -->
+        <div id="hourly-chart-container" class="w-full h-44 hidden items-center justify-center select-none relative pt-4">
+          <!-- SVG element injected via JS -->
+        </div>
+      </section>
+
+      <!-- Weekly Forecast Section -->
+      <section class="glass-card p-6">
+        <div class="flex items-center gap-2 mb-5">
+          <i data-lucide="calendar" class="w-5 h-5 text-emerald-400"></i>
+          <h3 class="text-sm font-semibold tracking-wider text-slate-300 uppercase">5-Day Extended Forecast</h3>
+        </div>
+
+        <!-- Extended Rows layout -->
+        <div id="weekly-forecast-container" class="flex flex-col divide-y divide-white/5">
+          <!-- weekly rows injected via js -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- SKELETON LOADING VIEW (Visible during operations) -->
+    <div id="loading-overlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-4 hidden">
+      <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+      <p class="text-sm font-medium text-slate-400">Retrieving atmospheric models...</p>
+    </div>
+
+    <!-- API SETTINGS MODAL / CONFIG DRAWER -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="max-w-md w-full glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col gap-5 shadow-2xl">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <i data-lucide="settings" class="w-5 h-5 text-indigo-400 animate-spin" style="animation-duration: 6s;"></i>
+            <h3 class="font-bold text-lg text-white">Configuration Panel</h3>
+          </div>
+          <button id="btn-close-settings" class="p-1.5 rounded-full bg-white/5 text-slate-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Configure the dashboard source. To fetch live meteorological data, enter your OpenWeatherMap API Key (v2.5) below. If left blank, the app runs in Demo Mode with loaded presets.
+        </p>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">OpenWeatherMap API Key</label>
+          <input type="password" id="input-api-key" placeholder="Enter key..." class="glass-input w-full px-4 py-2.5 rounded-xl text-sm outline-none">
+          <a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-400 hover:underline flex items-center gap-0.5 self-start mt-0.5">
+            Get key at OpenWeatherMap <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+        </div>
+
+        <div class="flex flex-col gap-3 border-t border-white/5 pt-4">
+          <h4 class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">Demo City Presets</h4>
+          <div class="grid grid-cols-2 gap-2" id="demo-city-presets">
+            <button data-city="london" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 text-slate-300 transition-all text-center">London</button>
+            <button data-city="new york" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 text-slate-300 transition-all text-center">New York</button>
+            <button data-city="tokyo" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 text-slate-300 transition-all text-center">Tokyo</button>
+            <button data-city="sydney" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 text-slate-300 transition-all text-center">Sydney</button>
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-end mt-2">
+          <button id="btn-save-settings" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white shadow-lg shadow-indigo-500/20 transition-all">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Information -->
+    <footer class="p-4 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500/80 font-medium px-6">
+      <span>Dashboard Client v1.0.0</span>
+      <span class="flex items-center gap-1">
+        Design aesthetics by Antigravity <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400 animate-pulse-soft"></i>
+      </span>
+    </footer>
+
+  </div>
+
+  <!-- Load JS modules -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
