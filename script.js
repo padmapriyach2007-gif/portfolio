@@ -14,27 +14,27 @@ document.querySelectorAll('.nav-links a').forEach(anchor => {
 });
 const myProjects = [
     {
-        title: "Java Number Guessing Game",
-        description: "A multi-level console game featuring attempt limits and input validation.",
-        image: "https://via.placeholder.com/600x300?text=Number+Guessing+Game",
+        title: "Guess the Number",
+        description: "The Number Guessing Game is an interactive Java console application where players try to guess a randomly generated number between 1 and 100",
+        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/Number%20guessing%20game.png",
         link: "https://lnkd.in/dtY3QxSm"
     },
     {
-        title: "Student Performance Report",
-        description: "An object-oriented Java application to calculate total marks, GPA, and class distinctions.",
-        image: "https://via.placeholder.com/600x300?text=Performance+Report",
+        title: "Student Grade Calculator",
+        description: "The Student Performance & Grade Calculator is a Java console application designed to calculate a student's academic performance based on marks obtained in multiple subjects",
+        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/pic.png",
         link: "https://lnkd.in/dtN4Spe3"
     },
     {
-        title: "DecodeLabs Internship Tasks",
-        description: "Core Java applications developed during my DecodeLabs internship.",
-        image: "https://via.placeholder.com/600x300?text=DecodeLabs+Projects",
+        title: "ATM System",
+        description: "The ATM Banking System is a Java-based console application that simulates basic ATM operations. It allows users to check their account balance, deposit money, withdraw money, and exit the system",
+        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/ATM%20pic.png",
         link: "https://lnkd.in/dRAYyYCB"
     },
     {
-        title: "Emotion Conveyer Concept",
-        description: "An application concept designed to analyze feelings and provide tailored motivation.",
-        image: "https://via.placeholder.com/600x300?text=Emotion+Conveyer",
+        title: "Currency Converter",
+        description: "The Currency Converter is a Java-based console application that allows users to convert an amount from one currency to another.",
+        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/Currency%20converter.png",
         link: "https://lnkd.in/dNiMwYuH"
     }
 ];
