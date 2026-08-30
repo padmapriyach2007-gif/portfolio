@@ -22,19 +22,19 @@ const myProjects = [
     {
         title: "Student Grade Calculator",
         description: "The Student Performance & Grade Calculator is a Java console application designed to calculate a student's academic performance based on marks obtained in multiple subjects",
-        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/pic.png",
+        image: "https://raw.githubusercontent.com/padmapriyach2007-gif/portfolio/main/pic.png",
         link: "https://lnkd.in/dtN4Spe3"
     },
     {
         title: "ATM System",
         description: "The ATM Banking System is a Java-based console application that simulates basic ATM operations. It allows users to check their account balance, deposit money, withdraw money, and exit the system",
-        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/ATM%20pic.png",
+        image: "https://raw.githubusercontent.com/padmapriyach2007-gif/portfolio/main/ATM%20pic.png",
         link: "https://lnkd.in/dRAYyYCB"
     },
     {
         title: "Currency Converter",
         description: "The Currency Converter is a Java-based console application that allows users to convert an amount from one currency to another.",
-        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/Currency%20converter.png",
+        image: "https://raw.githubusercontent.com/padmapriyach2007-gif/portfolio/main/Currency%20converter.png",
         link: "https://lnkd.in/dNiMwYuH"
     }
 ];
