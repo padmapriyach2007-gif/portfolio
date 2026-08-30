@@ -16,7 +16,7 @@ const myProjects = [
     {
         title: "Guess the Number",
         description: "The Number Guessing Game is an interactive Java console application where players try to guess a randomly generated number between 1 and 100",
-        image: "https://github.com/padmapriyach2007-gif/portfolio/blob/main/Number%20guessing%20game.png",
+        image: "https://raw.githubusercontent.com/padmapriyach2007-gif/portfolio/main/Number%20guessing%20game.png",
         link: "https://lnkd.in/dtY3QxSm"
     },
     {
