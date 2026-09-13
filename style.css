@@ -8,57 +8,61 @@
 }
 
 body {
-    font-family: 'Fira Code', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
     line-height: 1.6;
     color: #e2e8f0;
-    background-color: #0b0f19; /* Deep tech dark blue/black */
-    
-    /* --- Connecting Stars / Constellation Network Background --- */
-    background-image: 
-        /* Bright accent star points */
-        radial-gradient(2px 2px at 20px 30px, #00adb5, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 50px 160px, #00fff5, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 90px 40px, #00adb5, rgba(0,0,0,0)),
-        radial-gradient(2.5px 2.5px at 130px 80px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 160px 120px, #00adb5, rgba(0,0,0,0)),
-        
-        /* Connecting vector lines between stars */
-        linear-gradient(45deg, transparent 49%, rgba(0, 173, 181, 0.15) 50%, transparent 51%),
-        linear-gradient(-45deg, transparent 49%, rgba(0, 173, 181, 0.15) 50%, transparent 51%),
-        
-        /* Ambient center glow */
-        radial-gradient(circle at 50% 30%, rgba(0, 173, 181, 0.12) 0%, transparent 60%);
+    background-color: #050811; /* Deep cosmic void background */
+    overflow-x: hidden;
 
-    background-size: 180px 180px, 180px 180px, 180px 180px, 180px 180px, 180px 180px, 180px 180px, 90px 90px, 90px 90px, 100% 100%;
+    /* --- Floating Holographic Code & Matrix Mesh Background --- */
+    background-image: 
+        /* Neon Ambient Lights in 3D space */
+        radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(112, 0, 255, 0.12) 0%, transparent 45%),
+        
+        /* Floating Code Symbols Pattern */
+        radial-gradient(2px 2px at 40px 60px, #00f3ff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 150px 200px, #00ff66, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 280px 120px, #ffffff, rgba(0,0,0,0)),
+        
+        /* 3D Wireframe Perspective Grid (Coding Mesh in Air) */
+        linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+
+    background-size: 100% 100%, 100% 100%, 350px 350px, 350px 350px, 350px 350px, 50px 50px, 50px 50px;
     background-attachment: fixed;
-    animation: starNetworkDrift 40s linear infinite;
+    animation: floatingSpace 30s linear infinite;
 }
 
-/* Subtle floating constellation animation */
-@keyframes starNetworkDrift {
+/* Floating animation for background mesh and suspended code particles */
+@keyframes floatingSpace {
     0% {
-        background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+        background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    }
+    50% {
+        background-position: 0 0, 0 0, 50px -100px, -50px 100px, 100px 50px, 25px 25px, 25px 25px;
     }
     100% {
-        background-position: 180px 180px, -180px 180px, 180px -180px, 180px 180px, -180px -180px, 180px 180px, 90px 90px, -90px 90px, 0 0;
+        background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 50px 50px, 50px 50px;
     }
 }
 
 /* ==========================================
-   Navbar
+   Floating Glass Navbar
    ========================================== */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1.2rem 10%;
-    background-color: rgba(11, 15, 25, 0.9);
-    border-bottom: 1px solid rgba(0, 173, 181, 0.25);
-    backdrop-filter: blur(10px);
-    color: #fff;
+    margin: 1rem 5%;
+    border-radius: 12px;
+    background: rgba(11, 19, 43, 0.6);
+    border: 1px solid rgba(0, 243, 255, 0.25);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 243, 255, 0.1);
     position: sticky;
-    top: 0;
+    top: 1rem;
     z-index: 1000;
 }
 
@@ -71,17 +75,18 @@ body {
 .nav-links a {
     color: #cbd5e1;
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s, text-shadow 0.3s;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: #00adb5;
-    text-shadow: 0 0 8px rgba(0, 173, 181, 0.6);
+    color: #00f3ff;
+    text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
 }
 
 /* ==========================================
-   Hero Section
+   Hero Section (Floating Hologram Effect)
    ========================================== */
 .hero {
     display: flex;
@@ -89,86 +94,91 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 5rem 1rem;
-    background: transparent;
+    padding: 6rem 1rem;
     color: #fff;
+    animation: floatInAir 6s ease-in-out infinite;
 }
 
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #00adb5;
-    box-shadow: 0 0 20px rgba(0, 173, 181, 0.5);
-    margin-bottom: 1rem;
+/* Hovering effect making hero content float in mid-air */
+@keyframes floatInAir {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
 }
 
 .highlight {
-    color: #00adb5;
-    text-shadow: 0 0 10px rgba(0, 173, 181, 0.3);
+    color: #00f3ff;
+    text-shadow: 0 0 12px rgba(0, 243, 255, 0.8), 0 0 25px rgba(0, 243, 255, 0.4);
 }
 
 .hero-buttons {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     display: flex;
-    gap: 1rem;
+    gap: 1.2rem;
     justify-content: center;
 }
 
 /* ==========================================
-   Buttons
+   Holographic Neon Buttons
    ========================================== */
 .btn {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #00adb5;
-    color: #0b0f19;
-    border-radius: 5px;
+    padding: 0.85rem 1.8rem;
+    background: #00f3ff;
+    color: #050811;
+    border-radius: 6px;
     text-decoration: none;
     font-weight: bold;
+    letter-spacing: 1px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 173, 181, 0.3);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
 }
 
 .btn:hover {
-    background-color: #00fff5;
-    box-shadow: 0 0 20px rgba(0, 255, 245, 0.6);
-    transform: translateY(-2px);
+    background: #ffffff;
+    color: #050811;
+    box-shadow: 0 0 25px #00f3ff, 0 0 50px #00f3ff;
+    transform: translateY(-3px);
 }
 
 .btn-secondary {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: transparent;
-    color: #00adb5;
-    border: 2px solid #00adb5;
-    border-radius: 5px;
+    padding: 0.85rem 1.8rem;
+    background: rgba(0, 243, 255, 0.05);
+    color: #00f3ff;
+    border: 1px solid #00f3ff;
+    border-radius: 6px;
     text-decoration: none;
     font-weight: bold;
+    letter-spacing: 1px;
     transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
 
 .btn-secondary:hover {
-    background-color: rgba(0, 173, 181, 0.15);
-    color: #00fff5;
-    border-color: #00fff5;
-    box-shadow: 0 0 15px rgba(0, 173, 181, 0.4);
-    transform: translateY(-2px);
+    background: rgba(0, 243, 255, 0.2);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+    transform: translateY(-3px);
 }
 
 /* ==========================================
    Sections General
    ========================================== */
 .section {
-    padding: 4rem 10%;
+    padding: 5rem 10%;
     text-align: center;
 }
 
 .section h2 {
-    margin-bottom: 1.5rem;
-    font-size: 2rem;
+    margin-bottom: 2rem;
+    font-size: 2.2rem;
     color: #f8fafc;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     position: relative;
     display: inline-block;
 }
@@ -176,123 +186,59 @@ body {
 .section h2::after {
     content: '';
     display: block;
-    width: 50%;
+    width: 60%;
     height: 2px;
-    background: #00adb5;
-    margin: 8px auto 0 auto;
-    box-shadow: 0 0 8px #00adb5;
+    background: linear-gradient(90deg, transparent, #00f3ff, transparent);
+    margin: 10px auto 0 auto;
+    box-shadow: 0 0 10px #00f3ff;
 }
 
 /* ==========================================
-   Skills Section (Glassmorphism)
+   Suspended Glass Cards (Skills, Projects, Certs)
    ========================================== */
-.skills-grid {
+.skills-grid, .cert-grid, .project-grid {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.8rem;
 }
 
-.skill-card {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(0, 173, 181, 0.25);
-    backdrop-filter: blur(8px);
-    color: #00adb5;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.skill-card:hover {
-    border-color: #00adb5;
-    box-shadow: 0 0 15px rgba(0, 173, 181, 0.4);
-    transform: translateY(-3px);
-    color: #fff;
-}
-
-/* ==========================================
-   Certifications
-   ========================================== */
-.cert-grid {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.cert-card {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(0, 173, 181, 0.25);
-    backdrop-filter: blur(8px);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    max-width: 300px;
-    transition: all 0.3s ease;
-}
-
-.cert-card:hover {
-    border-color: #00adb5;
-    transform: translateY(-5px);
-    box-shadow: 0 0 20px rgba(0, 173, 181, 0.3);
-}
-
-.cert-card img {
-    width: 100%;
-    border-radius: 4px;
-}
-
-/* ==========================================
-   Projects Section
-   ========================================== */
 .project-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
     margin-top: 2rem;
 }
 
-.project-card {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(0, 173, 181, 0.2);
-    backdrop-filter: blur(8px);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    border-color: #00adb5;
-    box-shadow: 0 8px 25px rgba(0, 173, 181, 0.25);
-}
-
-.project-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-bottom: 1px solid rgba(0, 173, 181, 0.2);
-}
-
-.project-content {
+/* Floating Glassmorphism Container */
+.skill-card, .cert-card, .project-card {
+    background: rgba(11, 19, 43, 0.65);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
     padding: 1.5rem;
-    text-align: left;
+    color: #e2e8f0;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Elevation on hover to simulate floating closer in 3D air */
+.skill-card:hover, .cert-card:hover, .project-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: #00f3ff;
+    box-shadow: 0 15px 30px rgba(0, 243, 255, 0.25), 0 0 15px rgba(0, 243, 255, 0.2);
 }
 
 .project-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #f8fafc;
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+    color: #00f3ff;
 }
 
 .project-description {
     font-size: 0.95rem;
     color: #94a3b8;
     margin-bottom: 1.5rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* ==========================================
@@ -300,8 +246,9 @@ body {
    ========================================== */
 footer {
     text-align: center;
-    padding: 1.5rem;
-    background-color: rgba(11, 15, 25, 0.95);
-    border-top: 1px solid rgba(0, 173, 181, 0.2);
-    color: #94a3b8;
+    padding: 2rem;
+    background: rgba(5, 8, 17, 0.95);
+    border-top: 1px solid rgba(0, 243, 255, 0.15);
+    color: #64748b;
+    font-size: 0.9rem;
 }
